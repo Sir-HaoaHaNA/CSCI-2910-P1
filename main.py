@@ -87,14 +87,18 @@ async def get_user(user_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-@app.patch("/users/{user_id}/name")
-async def update_user_name(user_id: int, name: str, db: AsyncSession = Depends(get_db)):
-    user = await db.get(User, user_id)
-    if not user:
+@app.put("/users/{user_id}", response_model=UserResponse)
+async def update_user(user_id: int, user: UserResponse, db: AsyncSession = Depends(get_db)):
+    stmt = select(User).where(User.id == user_id)
+    result = await db.execute(stmt)
+    user_to_update = result.scalars().first()
+    if not user_to_update:
         raise HTTPException(status_code=404, detail="User not found")
-    user.username = name
+    user_to_update.username = user.username
+    user_to_update.image_url = user.image_url
     await db.commit()
-    return {"message": "User name updated"}
+    await db.refresh(user_to_update)
+    return user_to_update
 
 @app.patch("/users/{user_id}/is_admin")
 async def update_user_is_admin(user_id: int, is_admin: bool, db: AsyncSession = Depends(get_db)):
@@ -104,6 +108,15 @@ async def update_user_is_admin(user_id: int, is_admin: bool, db: AsyncSession = 
     user.is_admin = is_admin
     await db.commit()
     return {"message": "User admin status updated"}
+
+@app.patch("/users/{user_id}/name")
+async def update_user_name(user_id: int, name: str, db: AsyncSession = Depends(get_db)):
+    user = await db.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    user.username = name
+    await db.commit()
+    return {"message": "User name updated"}
 
 @app.patch("/users/{user_id}/image_url")
 async def update_user_image(user_id: int, image_url: str, db: AsyncSession = Depends(get_db)):
@@ -152,6 +165,17 @@ async def get_post(post_id: int, db: AsyncSession = Depends(get_db)):
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     return post
+
+@app.put("/posts/{post_id}", response_model=PostResponse)
+async def edit_post(post_id: int, post: PostCreate, db: AsyncSession = Depends(get_db)):
+    existing_post = await db.get(Post, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    existing_post.title = post.title
+    existing_post.post_text = post.post_text
+    await db.commit()
+    await db.refresh(existing_post)
+    return existing_post
 
 @app.patch("/posts/{post_id}/title")
 async def update_post_title(post_id: int, title: str, db: AsyncSession = Depends(get_db)):
