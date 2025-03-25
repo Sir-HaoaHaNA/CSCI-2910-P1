@@ -3,3 +3,4 @@ pydantic
 sqlalchemy
 asyncpg
 aiosqlite
+uvicorn
