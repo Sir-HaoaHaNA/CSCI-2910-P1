@@ -1,3 +1,3 @@
 # CSCI-2910-P1
-## This project is a backend implementation for the ShinraNet social media platform prototype. The backend is built using FastAPI and Python 3.12.x or later, and it interacts with a frontend built in .NET Blazor. The purpose of this API is to provide endpoints that handle the core functionality of ShinraNet, such as user management, posts, and interactions between users.
+## This project is a backend implementation for the ShinraNet social media platform prototype. The backend is built using FastAPI and Python 3, and it interacts with a frontend built in .NET Blazor. The purpose of this API is to provide endpoints that handle the core functionality of ShinraNet, such as user management, posts, and interactions between users.
 Shout out to [Charmines](https://github.com/ilikestohack) for staying up till 4am, helping me struggle through this.
